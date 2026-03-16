@@ -2,13 +2,13 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Relatorio Diario</title>
-    <link rel="stylesheet" href="style.css?v=11">
+    <title>PDV Master Pro</title>
+    <link rel="stylesheet" href="style.css?v=13">
     <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <h1>📊 Gestão PDV</h1>
+    <h1>📊 Gestão de Performance PDV</h1>
 
     <div class="summary-card">
         <div class="stat-item">Média Dia<span id="avg-day">0 min</span></div>
@@ -19,39 +19,49 @@
 
     <div class="main-container">
         <div class="section-box launch-box">
-            <h3>📝 Lançamento</h3>
+            <h3>📝 Lançamento Diário</h3>
             <div class="manual-form">
                 <select id="m-pdv">
                     <option value="PDV 01">PDV 01</option>
                     <option value="PDV 02">PDV 02</option>
                     <option value="PDV 03">PDV 03</option>
+                    <option value="PDV 04">PDV 04</option>
+                    <option value="PDV 05">PDV 05</option>
                 </select>
                 <input type="date" id="m-data">
-                <input type="time" id="m-inicio">
-                <input type="time" id="m-fim">
-                <button id="btn-registrar" onclick="addManualRow()">Registrar</button>
+                <div class="time-inputs">
+                    <div><label>Início:</label><input type="time" id="m-inicio"></div>
+                    <div><label>Fim:</label><input type="time" id="m-fim"></div>
+                </div>
+                <button id="btn-registrar" onclick="addManualRow()">REGISTRAR OC</button>
             </div>
         </div>
+
         <div class="section-box chart-box">
-            <canvas id="historyChart"></canvas>
+            <h3>📈 Histórico de Médias</h3>
+            <div class="canvas-container">
+                <canvas id="historyChart"></canvas>
+            </div>
         </div>
     </div>
 
     <div class="actions">
-        <button onclick="finalizarDia()" class="btn-purple">🏁 Finalizar Dia</button>
-        <button onclick="exportarExcel()" class="btn-dark">📥 Baixar Excel</button>
-        <button onclick="limparTudo()" class="btn-red">⚠️ Resetar</button>
+        <button onclick="finalizarDia()" class="btn-finish">🏁 Finalizar Dia</button>
+        <button onclick="exportarExcel()" class="btn-export">📥 Baixar Excel</button>
+        <button onclick="document.getElementById('file-upload').click()" class="btn-import">📤 Importar Excel</button>
+        <input type="file" id="file-upload" accept=".xlsx, .xls, .csv" style="display:none">
+        <button onclick="limparTudo()" class="btn-danger">⚠️ Resetar Sistema</button>
     </div>
 
     <table id="data-table">
         <thead>
             <tr>
-                <th>PDV</th><th>Data</th><th>Início</th><th>Fim</th><th>Tempo</th><th>Status</th><th>Obs</th>
+                <th>PDV</th><th>Data</th><th>Início</th><th>Fim</th><th>Tempo</th><th>Status</th><th>Observação</th>
             </tr>
         </thead>
         <tbody></tbody>
     </table>
 
-    <script src="script.js?v=11"></script>
+    <script src="script.js?v=13"></script>
 </body>
 </html>
