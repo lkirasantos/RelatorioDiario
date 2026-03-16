@@ -1,46 +1,51 @@
-:root {
-    --bg-color: #121212;
-    --card-bg: #1e1e1e;
-    --text-color: #e0e0e0;
-    --border-color: #333;
+let allData = [];
+
+function updateStats() {
+    if (allData.length === 0) return;
+    
+    const totalMinutes = allData.reduce((acc, curr) => acc + curr.minutos, 0);
+    const avg = (totalMinutes / allData.length).toFixed(1);
+    
+    document.getElementById('avg-day').innerText = `${avg} min`;
+    document.getElementById('total-ocs').innerText = allData.length;
+    
+    const bom = allData.filter(d => d.minutos <= 5).length;
+    const regular = allData.filter(d => d.minutos > 5 && d.minutos <= 15).length;
+    const ruim = allData.filter(d => d.minutos > 15).length;
+    
+    document.getElementById('status-counts').innerHTML = `B/R/R <span>${bom} / ${regular} / ${ruim}</span>`;
 }
 
-body { 
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-    padding: 20px; 
-    background-color: var(--bg-color); 
-    color: var(--text-color);
+function addManualRow() {
+    const pdv = document.getElementById('m-pdv').value;
+    const data = document.getElementById('m-data').value;
+    const inicio = document.getElementById('m-inicio').value;
+    const fim = document.getElementById('m-fim').value;
+
+    if(!inicio || !fim) return alert("Preencha as horas!");
+
+    const diff = calculateDiff(inicio, fim);
+    const newData = { PDV: pdv, Data: data, HoraInicio: inicio, HoraFim: fim, minutos: diff };
+    
+    allData.push(newData);
+    renderNewRow(newData);
+    updateStats();
 }
 
-.summary-card { 
-    background: var(--card-bg); 
-    padding: 20px; 
-    border-radius: 12px; 
-    margin-bottom: 20px; 
-    border: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
+function renderNewRow(row) {
+    const tbody = document.querySelector('#data-table tbody');
+    const statusClass = getStatusClass(row.minutos);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td>${row.PDV}</td>
+        <td>${row.Data}</td>
+        <td>${row.HoraInicio}</td>
+        <td>${row.HoraFim}</td>
+        <td>${row.minutos} min</td>
+        <td class="${statusClass}">${getStatusLabel(row.minutos)}</td>
+        <td><input type="text" class="obs-field" placeholder="Obs..."></td>
+    `;
+    tbody.appendChild(tr);
 }
 
-.stat-item { text-align: center; }
-.stat-item span { display: block; font-size: 1.5rem; font-weight: bold; color: #007bff; }
-
-table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 8px; overflow: hidden; }
-th, td { border: 1px solid var(--border-color); padding: 10px; text-align: center; }
-th { background-color: #2c2c2c; color: #fff; }
-
-input, button { 
-    background: #2c2c2c; 
-    color: white; 
-    border: 1px solid #444; 
-    padding: 8px; 
-    border-radius: 4px;
-}
-
-button { cursor: pointer; background: #007bff; border: none; font-weight: bold; }
-button:hover { background: #0056b3; }
-
-.status-bom { background-color: #1b5e20 !important; color: #c8e6c9; }
-.status-regular { background-color: #fbc02d !important; color: #333; }
-.status-ruim { background-color: #b71c1c !important; color: #ffcdd2; }
+// Reutilize suas funções calculateDiff, getStatusClass e getStatusLabel anteriores
