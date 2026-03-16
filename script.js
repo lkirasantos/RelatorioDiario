@@ -1,29 +1,16 @@
-let allData = [];
+let currentDayData = [];
+let historyData = JSON.parse(localStorage.getItem('pdvHistory')) || [];
+let myChart;
 
-document.getElementById('file-upload').addEventListener('change', handleFile);
-
-function handleFile(e) {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onload = function(event) {
-        const data = new Uint8Array(event.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-        
-        rows.forEach(row => {
-            const diff = calculateDiff(row.HoraInicio, row.HoraFim);
-            allData.push({ 
-                PDV: row.PDV, 
-                Data: row.Data, 
-                HoraInicio: row.HoraInicio, 
-                HoraFim: row.HoraFim, 
-                minutos: diff 
-            });
-        });
-        renderTable();
-    };
-    reader.readAsArrayBuffer(file);
-}
+// Iniciar página
+window.onload = () => {
+    // Definir data de hoje no campo
+    const hoje = new Date().toISOString().split('T')[0];
+    document.getElementById('m-data').value = hoje;
+    
+    updateHistoryStats();
+    initChart();
+};
 
 function calculateDiff(start, end) {
     if(!start || !end) return 0;
@@ -39,13 +26,13 @@ function addManualRow() {
     const inicio = document.getElementById('m-inicio').value;
     const fim = document.getElementById('m-fim').value;
 
-    if(!inicio || !fim) return alert("Preencha os horários!");
+    if(!pdv || !inicio || !fim) return alert("Selecione o PDV e as horas!");
 
     const diff = calculateDiff(inicio, fim);
-    allData.push({ PDV: pdv, Data: data, HoraInicio: inicio, HoraFim: fim, minutos: diff });
+    currentDayData.push({ PDV: pdv, Data: data, HoraInicio: inicio, HoraFim: fim, minutos: diff });
     
     renderTable();
-    document.getElementById('m-pdv').value = '';
+    // Nota: O PDV e Data não são limpos para ficarem "travados" como você pediu
     document.getElementById('m-inicio').value = '';
     document.getElementById('m-fim').value = '';
 }
@@ -53,35 +40,81 @@ function addManualRow() {
 function renderTable() {
     const tbody = document.querySelector('#data-table tbody');
     tbody.innerHTML = '';
-    
-    allData.forEach(row => {
-        let statusClass = row.minutos <= 5 ? 'status-bom' : row.minutos <= 15 ? 'status-regular' : 'status-ruim';
-        let statusLabel = row.minutos <= 5 ? 'BOM' : row.minutos <= 15 ? 'REGULAR' : 'RUIM';
-        
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${row.PDV || '-'}</td>
-            <td>${row.Data || '-'}</td>
-            <td>${row.HoraInicio}</td>
-            <td>${row.HoraFim}</td>
-            <td>${row.minutos} min</td>
-            <td class="${statusClass}">${statusLabel}</td>
-            <td><input type="text" class="obs-field" placeholder="Obs..."></td>
-        `;
-        tbody.appendChild(tr);
+    currentDayData.forEach(row => {
+        let status = row.minutos <= 5 ? 'status-bom' : row.minutos <= 15 ? 'status-regular' : 'status-ruim';
+        let label = row.minutos <= 5 ? 'BOM' : row.minutos <= 15 ? 'REGULAR' : 'RUIM';
+        tbody.innerHTML += `<tr>
+            <td>${row.PDV}</td><td>${row.Data}</td><td>${row.HoraInicio}</td><td>${row.HoraFim}</td>
+            <td>${row.minutos} min</td><td class="${status}">${label}</td>
+            <td><input type="text" style="width:80%" placeholder="..."></td>
+        </tr>`;
     });
-    updateStats();
+    updateTodayStats();
 }
 
-function updateStats() {
-    if (allData.length === 0) return;
-    const totalMin = allData.reduce((acc, curr) => acc + curr.minutos, 0);
-    const avg = (totalMin / allData.length).toFixed(1);
-    const bom = allData.filter(d => d.minutos <= 5).length;
-    const reg = allData.filter(d => d.minutos > 5 && d.minutos <= 15).length;
-    const ruim = allData.filter(d => d.minutos > 15).length;
-
+function updateTodayStats() {
+    if (currentDayData.length === 0) return;
+    const total = currentDayData.reduce((acc, c) => acc + c.minutos, 0);
+    const avg = (total / currentDayData.length).toFixed(1);
     document.getElementById('avg-day').innerText = `${avg} min`;
-    document.getElementById('total-ocs').innerText = allData.length;
-    document.getElementById('status-counts').innerText = `${bom} / ${reg} / ${ruim}`;
+    document.getElementById('total-ocs').innerText = currentDayData.length;
+}
+
+function finalizarDia() {
+    if(currentDayData.length === 0) return alert("Nenhum dado para salvar!");
+    
+    const totalMin = currentDayData.reduce((acc, c) => acc + c.minutos, 0);
+    const avgDay = (totalMin / currentDayData.length).toFixed(1);
+    const dataRef = currentDayData[0].Data;
+
+    // Salvar no histórico
+    historyData.push({ data: dataRef, media: parseFloat(avgDay) });
+    localStorage.setItem('pdvHistory', JSON.stringify(historyData));
+
+    // Limpar para o próximo dia
+    currentDayData = [];
+    renderTable();
+    updateHistoryStats();
+    updateChart();
+    alert("Dia finalizado e salvo com sucesso!");
+}
+
+function updateHistoryStats() {
+    if (historyData.length === 0) return;
+    const total = historyData.reduce((acc, c) => acc + c.media, 0);
+    const avgMonth = (total / historyData.length).toFixed(1);
+    
+    document.getElementById('avg-month').innerText = `${avgMonth} min`;
+    
+    let status = "";
+    if(avgMonth <= 5) status = "BOM ✅";
+    else if(avgMonth <= 15) status = "REGULAR ⚠️";
+    else status = "RUIM ❌";
+    
+    document.getElementById('status-month').innerText = status;
+}
+
+function initChart() {
+    const ctx = document.getElementById('historyChart').getContext('2d');
+    myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: historyData.map(d => d.data),
+            datasets: [{
+                label: 'Média de Tempo (min)',
+                data: historyData.map(d => d.media),
+                borderColor: '#58a6ff',
+                backgroundColor: 'rgba(88, 166, 255, 0.1)',
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: { scales: { y: { beginAtZero: true }, x: { ticks: { color: '#8b949e' } } } }
+    });
+}
+
+function updateChart() {
+    myChart.data.labels = historyData.map(d => d.data);
+    myChart.data.datasets[0].data = historyData.map(d => d.media);
+    myChart.update();
 }
