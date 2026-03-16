@@ -1,41 +1,80 @@
-:root {
-    --bg-color: #121212;
-    --card-bg: #1e1e1e;
-    --text-color: #e0e0e0;
-    --border-color: #333;
-    --primary: #007bff;
+let allData = [];
+
+document.getElementById('file-upload').addEventListener('change', handleFile);
+
+function handleFile(e) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        const data = new Uint8Array(event.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+        
+        rows.forEach(row => {
+            const diff = calculateDiff(row.HoraInicio, row.HoraFim);
+            allData.push({ ...row, minutos: diff });
+        });
+        renderTable();
+    };
+    reader.readAsArrayBuffer(file);
 }
 
-body { font-family: 'Segoe UI', sans-serif; padding: 20px; background-color: var(--bg-color); color: var(--text-color); }
-
-.summary-card { 
-    background: var(--card-bg); 
-    padding: 20px; 
-    border-radius: 12px; 
-    margin-bottom: 20px; 
-    border: 1px solid var(--border-color);
-    display: flex; justify-content: space-around; text-align: center;
+function calculateDiff(start, end) {
+    if(!start || !end) return 0;
+    const s = new Date(`2024-01-01T${start}`);
+    const e = new Date(`2024-01-01T${end}`);
+    let diff = Math.floor((e - s) / 60000);
+    return diff < 0 ? 0 : diff;
 }
 
-.stat-item span { display: block; font-size: 1.8rem; font-weight: bold; color: var(--primary); margin-top: 5px; }
+function addManualRow() {
+    const pdv = document.getElementById('m-pdv').value;
+    const data = document.getElementById('m-data').value;
+    const inicio = document.getElementById('m-inicio').value;
+    const fim = document.getElementById('m-fim').value;
 
-.upload-section { background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); }
+    if(!inicio || !fim) return alert("Preencha as horas!");
 
-.manual-form { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-
-input, button { 
-    background: #2c2c2c; color: white; border: 1px solid #444; padding: 10px; border-radius: 6px; 
+    const diff = calculateDiff(inicio, fim);
+    allData.push({ PDV: pdv, Data: data, HoraInicio: inicio, HoraFim: fim, minutos: diff });
+    
+    renderTable();
+    // Limpa campos
+    document.getElementById('m-pdv').value = '';
 }
 
-button { background: var(--primary); border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
-button:hover { background: #0056b3; }
+function renderTable() {
+    const tbody = document.querySelector('#data-table tbody');
+    tbody.innerHTML = '';
+    
+    allData.forEach(row => {
+        const statusClass = row.minutos <= 5 ? 'status-bom' : row.minutos <= 15 ? 'status-regular' : 'status-ruim';
+        const statusLabel = row.minutos <= 5 ? 'BOM' : row.minutos <= 15 ? 'REGULAR' : 'RUIM';
+        
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${row.PDV || '-'}</td>
+            <td>${row.Data || '-'}</td>
+            <td>${row.HoraInicio}</td>
+            <td>${row.HoraFim}</td>
+            <td>${row.minutos} min</td>
+            <td class="${statusClass}">${statusLabel}</td>
+            <td><input type="text" class="obs-field" placeholder="Obs..."></td>
+        `;
+        tbody.appendChild(tr);
+    });
+    updateStats();
+}
 
-table { width: 100%; border-collapse: collapse; margin-top: 25px; background: var(--card-bg); }
-th, td { border: 1px solid var(--border-color); padding: 12px; text-align: center; }
-th { background-color: #2c2c2c; }
+function updateStats() {
+    if (allData.length === 0) return;
+    const totalMin = allData.reduce((acc, curr) => acc + curr.minutos, 0);
+    const avg = (totalMin / allData.length).toFixed(1);
+    const bom = allData.filter(d => d.minutos <= 5).length;
+    const reg = allData.filter(d => d.minutos > 5 && d.minutos <= 15).length;
+    const ruim = allData.filter(d => d.minutos > 15).length;
 
-.status-bom { background-color: #1b5e20 !important; color: #fff; }
-.status-regular { background-color: #fbc02d !important; color: #000; }
-.status-ruim { background-color: #b71c1c !important; color: #fff; }
-
-input.obs-field { width: 90%; background: transparent; }
+    document.getElementById('avg-day').innerText = `${avg} min`;
+    document.getElementById('total-ocs').innerText = allData.length;
+    document.getElementById('status-counts').innerText = `${bom} / ${reg} / ${ruim}`;
+}
