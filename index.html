@@ -1,17 +1,54 @@
-<div class="summary-card">
-    <div class="stat-item">Média do Dia<span id="avg-day">0 min</span></div>
-    <div class="stat-item">Total OCs<span id="total-ocs">0</span></div>
-    <div id="status-counts" class="stat-item">B/R/R<span>0 / 0 / 0</span></div>
-</div>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de PDV - Dark Mode</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
 
-<div class="upload-section" style="margin-bottom: 20px;">
-    <h3>Adicionar Manualmente:</h3>
-    <input type="text" id="m-pdv" placeholder="PDV">
-    <input type="date" id="m-data">
-    <input type="time" id="m-inicio">
-    <input type="time" id="m-fim">
-    <button onclick="addManualRow()">+ Adicionar</button>
-    
-    <span style="margin-left: 20px;">Ou Importar:</span>
-    <input type="file" id="file-upload" accept=".xlsx, .xls, .csv">
-</div>
+    <h1>📊 Gerenciador de Relatórios PDV</h1>
+
+    <div class="summary-card">
+        <div class="stat-item">Média de Tempo<span id="avg-day">0 min</span></div>
+        <div class="stat-item">Total de OCs<span id="total-ocs">0</span></div>
+        <div class="stat-item">Status (B/R/R)<span id="status-counts">0 / 0 / 0</span></div>
+    </div>
+
+    <div class="upload-section">
+        <h3>Adicionar Novo Registro:</h3>
+        <div class="manual-form">
+            <input type="text" id="m-pdv" placeholder="Nome do PDV">
+            <input type="date" id="m-data">
+            <label>Início:</label><input type="time" id="m-inicio">
+            <label>Fim:</label><input type="time" id="m-fim">
+            <button onclick="addManualRow()">+ Adicionar</button>
+        </div>
+        
+        <hr style="border: 0.5px solid #333; margin: 20px 0;">
+        
+        <label for="file-upload">Ou importar planilha completa:</label>
+        <input type="file" id="file-upload" accept=".xlsx, .xls, .csv">
+    </div>
+
+    <table id="data-table">
+        <thead>
+            <tr>
+                <th>PDV</th>
+                <th>Data</th>
+                <th>Início</th>
+                <th>Fim</th>
+                <th>Tempo</th>
+                <th>Status</th>
+                <th>Observação</th>
+            </tr>
+        </thead>
+        <tbody>
+            </tbody>
+    </table>
+
+    <script src="script.js"></script>
+</body>
+</html>
