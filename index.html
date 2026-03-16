@@ -2,72 +2,56 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestão de Performance PDV</title>
-    <link rel="stylesheet" href="style.css?v=6">
+    <title>PDV Master</title>
+    <link rel="stylesheet" href="style.css?v=10">
     <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-
-    <h1>🚀 Gestão de Performance PDV</h1>
+    <h1>📊 Gestão PDV</h1>
 
     <div class="summary-card">
-        <div class="stat-item">Média Hoje<span id="avg-day">0 min</span></div>
-        <div class="stat-item">Total OCs Hoje<span id="total-ocs">0</span></div>
-        <div class="stat-item">Média Mensal<span id="avg-month">0 min</span></div>
+        <div class="stat-item">Média Dia<span id="avg-day">0 min</span></div>
+        <div class="stat-item">Total OCs<span id="total-ocs">0</span></div>
+        <div class="stat-item">Média Mês<span id="avg-month">0 min</span></div>
         <div class="stat-item">Status Mês<span id="status-month">-</span></div>
     </div>
 
     <div class="main-container">
         <div class="section-box">
-            <h3>📝 Lançamento Diário</h3>
+            <h3>📝 Lançamento</h3>
             <div class="manual-form">
                 <select id="m-pdv">
-                    <option value="">Selecione o PDV</option>
                     <option value="PDV 01">PDV 01</option>
                     <option value="PDV 02">PDV 02</option>
                     <option value="PDV 03">PDV 03</option>
-                    <option value="PDV 04">PDV 04</option>
                 </select>
-                <input type="date" id="m-data" readonly>
-                <div class="time-group">
-                    <label>Início:</label><input type="time" id="m-inicio">
-                    <label>Fim:</label><input type="time" id="m-fim">
-                </div>
-                <button onclick="addManualRow()" class="btn-add">Registrar OC</button>
+                <input type="date" id="m-data">
+                <input type="time" id="m-inicio">
+                <input type="time" id="m-fim">
+                <button onclick="addManualRow()">Registrar</button>
             </div>
         </div>
-
         <div class="section-box">
-            <h3>📊 Histórico de Médias</h3>
-            <canvas id="historyChart" style="max-height: 180px;"></canvas>
+            <canvas id="historyChart"></canvas>
         </div>
     </div>
 
-    <div class="actions-bar">
-        <button onclick="finalizarDia()" class="btn-finish">🏁 Finalizar Dia</button>
-        <button onclick="exportarExcel()" class="btn-export">📥 Baixar Excel (.xlsx)</button>
-        <button onclick="document.getElementById('file-upload').click()" class="btn-import">📤 Importar Planilha</button>
-        <input type="file" id="file-upload" accept=".xlsx, .xls, .csv" style="display:none">
-        <button onclick="limparTudo()" class="btn-danger">⚠️ Resetar Sistema</button>
+    <div class="actions">
+        <button onclick="finalizarDia()" style="background:#8957e5">🏁 Finalizar Dia</button>
+        <button onclick="exportarExcel()" style="background:#30363d">📥 Baixar Excel</button>
+        <button onclick="limparTudo()" style="background:#da3633">⚠️ Resetar</button>
     </div>
 
     <table id="data-table">
         <thead>
             <tr>
-                <th>PDV</th>
-                <th>Data</th>
-                <th>Início</th>
-                <th>Fim</th>
-                <th>Tempo</th>
-                <th>Status</th>
-                <th>Observação</th>
+                <th>PDV</th><th>Data</th><th>Início</th><th>Fim</th><th>Tempo</th><th>Status</th><th>Obs</th>
             </tr>
         </thead>
         <tbody></tbody>
     </table>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=10"></script>
 </body>
 </html>
