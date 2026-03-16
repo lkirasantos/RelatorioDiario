@@ -2,12 +2,9 @@ let currentDayData = [];
 let historyData = JSON.parse(localStorage.getItem('pdvHistory')) || [];
 let myChart;
 
-// Iniciar página
 window.onload = () => {
-    // Definir data de hoje no campo
-    const hoje = new Date().toISOString().split('T')[0];
-    document.getElementById('m-data').value = hoje;
-    
+    // Data automática: 16/03/2026 conforme sistema
+    document.getElementById('m-data').value = new Date().toISOString().split('T')[0];
     updateHistoryStats();
     initChart();
 };
@@ -26,13 +23,12 @@ function addManualRow() {
     const inicio = document.getElementById('m-inicio').value;
     const fim = document.getElementById('m-fim').value;
 
-    if(!pdv || !inicio || !fim) return alert("Selecione o PDV e as horas!");
+    if(!pdv || !inicio || !fim) return alert("Preencha PDV e Horários!");
 
     const diff = calculateDiff(inicio, fim);
-    currentDayData.push({ PDV: pdv, Data: data, HoraInicio: inicio, HoraFim: fim, minutos: diff });
+    currentDayData.push({ PDV: pdv, Data: data, HoraInicio: inicio, HoraFim: fim, minutos: diff, obs: "" });
     
     renderTable();
-    // Nota: O PDV e Data não são limpos para ficarem "travados" como você pediu
     document.getElementById('m-inicio').value = '';
     document.getElementById('m-fim').value = '';
 }
@@ -40,17 +36,19 @@ function addManualRow() {
 function renderTable() {
     const tbody = document.querySelector('#data-table tbody');
     tbody.innerHTML = '';
-    currentDayData.forEach(row => {
+    currentDayData.forEach((row, index) => {
         let status = row.minutos <= 5 ? 'status-bom' : row.minutos <= 15 ? 'status-regular' : 'status-ruim';
         let label = row.minutos <= 5 ? 'BOM' : row.minutos <= 15 ? 'REGULAR' : 'RUIM';
         tbody.innerHTML += `<tr>
             <td>${row.PDV}</td><td>${row.Data}</td><td>${row.HoraInicio}</td><td>${row.HoraFim}</td>
             <td>${row.minutos} min</td><td class="${status}">${label}</td>
-            <td><input type="text" style="width:80%" placeholder="..."></td>
+            <td><input type="text" class="obs-field" value="${row.obs}" onchange="updateObs(${index}, this.value)"></td>
         </tr>`;
     });
     updateTodayStats();
 }
+
+function updateObs(index, val) { currentDayData[index].obs = val; }
 
 function updateTodayStats() {
     if (currentDayData.length === 0) return;
@@ -61,37 +59,34 @@ function updateTodayStats() {
 }
 
 function finalizarDia() {
-    if(currentDayData.length === 0) return alert("Nenhum dado para salvar!");
+    if(currentDayData.length === 0) return alert("Sem dados hoje!");
+    const total = currentDayData.reduce((acc, c) => acc + c.minutos, 0);
+    const avgDay = (total / currentDayData.length).toFixed(1);
     
-    const totalMin = currentDayData.reduce((acc, c) => acc + c.minutos, 0);
-    const avgDay = (totalMin / currentDayData.length).toFixed(1);
-    const dataRef = currentDayData[0].Data;
-
-    // Salvar no histórico
-    historyData.push({ data: dataRef, media: parseFloat(avgDay) });
+    historyData.push({ data: currentDayData[0].Data, media: parseFloat(avgDay) });
     localStorage.setItem('pdvHistory', JSON.stringify(historyData));
-
-    // Limpar para o próximo dia
+    
     currentDayData = [];
     renderTable();
     updateHistoryStats();
     updateChart();
-    alert("Dia finalizado e salvo com sucesso!");
+    alert("Dia salvo no histórico!");
+}
+
+function exportarExcel() {
+    if(currentDayData.length === 0) return alert("Tabela vazia!");
+    const ws = XLSX.utils.json_to_sheet(currentDayData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Relatorio");
+    XLSX.writeFile(wb, `Relatorio_PDV_${new Date().toLocaleDateString()}.xlsx`);
 }
 
 function updateHistoryStats() {
     if (historyData.length === 0) return;
     const total = historyData.reduce((acc, c) => acc + c.media, 0);
     const avgMonth = (total / historyData.length).toFixed(1);
-    
     document.getElementById('avg-month').innerText = `${avgMonth} min`;
-    
-    let status = "";
-    if(avgMonth <= 5) status = "BOM ✅";
-    else if(avgMonth <= 15) status = "REGULAR ⚠️";
-    else status = "RUIM ❌";
-    
-    document.getElementById('status-month').innerText = status;
+    document.getElementById('status-month').innerText = avgMonth <= 5 ? "BOM ✅" : avgMonth <= 15 ? "REGULAR ⚠️" : "RUIM ❌";
 }
 
 function initChart() {
@@ -100,16 +95,8 @@ function initChart() {
         type: 'line',
         data: {
             labels: historyData.map(d => d.data),
-            datasets: [{
-                label: 'Média de Tempo (min)',
-                data: historyData.map(d => d.media),
-                borderColor: '#58a6ff',
-                backgroundColor: 'rgba(88, 166, 255, 0.1)',
-                fill: true,
-                tension: 0.3
-            }]
-        },
-        options: { scales: { y: { beginAtZero: true }, x: { ticks: { color: '#8b949e' } } } }
+            datasets: [{ label: 'Médias Diárias', data: historyData.map(d => d.media), borderColor: '#58a6ff', tension: 0.3 }]
+        }
     });
 }
 
@@ -117,4 +104,11 @@ function updateChart() {
     myChart.data.labels = historyData.map(d => d.data);
     myChart.data.datasets[0].data = historyData.map(d => d.media);
     myChart.update();
+}
+
+function limparTudo() {
+    if(confirm("Isso apagará TODO o histórico do gráfico e meses. Confirma?")) {
+        localStorage.clear();
+        location.reload();
+    }
 }
