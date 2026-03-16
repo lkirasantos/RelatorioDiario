@@ -2,8 +2,8 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>PDV Master</title>
-    <link rel="stylesheet" href="style.css?v=10">
+    <title>Relatorio Diario</title>
+    <link rel="stylesheet" href="style.css?v=11">
     <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -18,7 +18,7 @@
     </div>
 
     <div class="main-container">
-        <div class="section-box">
+        <div class="section-box launch-box">
             <h3>📝 Lançamento</h3>
             <div class="manual-form">
                 <select id="m-pdv">
@@ -29,18 +29,18 @@
                 <input type="date" id="m-data">
                 <input type="time" id="m-inicio">
                 <input type="time" id="m-fim">
-                <button onclick="addManualRow()">Registrar</button>
+                <button id="btn-registrar" onclick="addManualRow()">Registrar</button>
             </div>
         </div>
-        <div class="section-box">
+        <div class="section-box chart-box">
             <canvas id="historyChart"></canvas>
         </div>
     </div>
 
     <div class="actions">
-        <button onclick="finalizarDia()" style="background:#8957e5">🏁 Finalizar Dia</button>
-        <button onclick="exportarExcel()" style="background:#30363d">📥 Baixar Excel</button>
-        <button onclick="limparTudo()" style="background:#da3633">⚠️ Resetar</button>
+        <button onclick="finalizarDia()" class="btn-purple">🏁 Finalizar Dia</button>
+        <button onclick="exportarExcel()" class="btn-dark">📥 Baixar Excel</button>
+        <button onclick="limparTudo()" class="btn-red">⚠️ Resetar</button>
     </div>
 
     <table id="data-table">
@@ -52,6 +52,6 @@
         <tbody></tbody>
     </table>
 
-    <script src="script.js?v=10"></script>
+    <script src="script.js?v=11"></script>
 </body>
 </html>
