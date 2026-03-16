@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Relatórios PDV Pro</title>
-    <link rel="stylesheet" href="style.css?v=4">
+    <title>Sistema PDV Pro - Exportação</title>
+    <link rel="stylesheet" href="style.css?v=5">
     <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -30,25 +30,27 @@
                     <option value="PDV 03">PDV 03</option>
                     <option value="PDV 04">PDV 04</option>
                 </select>
-                <input type="date" id="m-data" readonly title="Data automática">
+                <input type="date" id="m-data" readonly>
                 <div class="time-group">
-                    <input type="time" id="m-inicio">
-                    <input type="time" id="m-fim">
+                    <label>Início:</label><input type="time" id="m-inicio">
+                    <label>Fim:</label><input type="time" id="m-fim">
                 </div>
                 <button onclick="addManualRow()" class="btn-add">Registrar OC</button>
             </div>
         </div>
 
         <div class="section-box">
-            <h3>📊 Histórico de Médias (Dias)</h3>
+            <h3>📊 Histórico de Médias</h3>
             <canvas id="historyChart" style="max-height: 180px;"></canvas>
         </div>
     </div>
 
-    <div style="margin-bottom: 20px; display: flex; gap: 10px;">
-        <button onclick="finalizarDia()" style="background: #f85149;">🏁 Finalizar Dia e Salvar</button>
+    <div class="actions-bar">
+        <button onclick="finalizarDia()" class="btn-finish">🏁 Finalizar Dia</button>
+        <button onclick="exportarExcel()" class="btn-export">📥 Baixar Excel (.xlsx)</button>
+        <button onclick="document.getElementById('file-upload').click()" class="btn-import">📤 Importar Antigo</button>
         <input type="file" id="file-upload" accept=".xlsx, .xls, .csv" style="display:none">
-        <button onclick="document.getElementById('file-upload').click()" style="background: #30363d;">📥 Importar Excel</button>
+        <button onclick="limparTudo()" class="btn-danger">⚠️ Resetar Tudo</button>
     </div>
 
     <table id="data-table">
