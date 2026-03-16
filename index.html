@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relatório de PDV - Dark Mode</title>
-    <link rel="stylesheet" href="style.css?v=2">
+    <title>Relatório PDV - Dark Mode</title>
+    <link rel="stylesheet" href="style.css?v=3">
     <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
@@ -19,25 +19,23 @@
 
     <div class="main-container">
         <div class="section-box">
-            <h3>➕ Adicionar Registro Manual</h3>
+            <h3>➕ Preenchimento Manual</h3>
             <div class="manual-form">
-                <div class="input-group">
-                    <input type="text" id="m-pdv" placeholder="Nome do PDV">
-                    <input type="date" id="m-data">
-                </div>
-                <div class="input-group">
+                <input type="text" id="m-pdv" placeholder="Nome do PDV">
+                <input type="date" id="m-data">
+                <div style="display: flex; gap: 10px; align-items: center;">
                     <label>Início:</label><input type="time" id="m-inicio">
                     <label>Fim:</label><input type="time" id="m-fim">
                 </div>
-                <button onclick="addManualRow()" class="btn-add">Adicionar na Tabela</button>
+                <button onclick="addManualRow()" class="btn-add">Adicionar Linha</button>
             </div>
         </div>
 
         <div class="section-box">
-            <h3>📁 Importar Planilha Atual</h3>
+            <h3>📁 Upload de Planilha</h3>
             <input type="file" id="file-upload" accept=".xlsx, .xls, .csv">
-            <p style="font-size: 0.8rem; color: #8b949e; margin-top: 10px;">
-                Colunas necessárias: PDV, Data, HoraInicio, HoraFim
+            <p style="font-size: 0.75rem; color: #8b949e; margin-top: 10px;">
+                Colunas: PDV, Data, HoraInicio, HoraFim
             </p>
         </div>
     </div>
@@ -47,9 +45,9 @@
             <tr>
                 <th>PDV</th>
                 <th>Data</th>
-                <th>Início</th>
-                <th>Fim</th>
-                <th>Tempo</th>
+                <th>Hora Início</th>
+                <th>Hora Fim</th>
+                <th>Tempo Gasto</th>
                 <th>Status</th>
                 <th>Observação</th>
             </tr>
