@@ -2,8 +2,7 @@
     --bg: #0d1117; --card: #161b22; --text: #c9d1d9; --border: #30363d;
     --green: #238636; --blue: #58a6ff; --red: #da3633; --yellow: #9e6a03;
 }
-body { font-family: 'Segoe UI', sans-serif; padding: 20px; background: var(--bg); color: var(--text); margin: 0; }
-h1 { text-align: center; color: #fff; }
+body { font-family: 'Segoe UI', sans-serif; padding: 20px; background: var(--bg); color: var(--text); }
 
 .summary-card { 
     background: var(--card); padding: 20px; border-radius: 10px; border: 1px solid var(--border);
@@ -15,19 +14,24 @@ h1 { text-align: center; color: #fff; }
 .section-box { background: var(--card); padding: 20px; border-radius: 10px; border: 1px solid var(--border); }
 
 .manual-form { display: flex; flex-direction: column; gap: 10px; }
-.time-group { display: flex; gap: 10px; }
-input, select, button { background: #0d1117; color: #fff; border: 1px solid var(--border); padding: 10px; border-radius: 6px; }
+.time-group { display: flex; gap: 10px; align-items: center; }
 
-button { cursor: pointer; font-weight: bold; transition: 0.2s; border: none; }
+.actions-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+button { cursor: pointer; font-weight: bold; padding: 10px 15px; border-radius: 6px; border: none; color: #fff; transition: 0.2s; }
+
 .btn-add { background: var(--green); }
-.btn-add:hover { background: #2ea043; }
+.btn-finish { background: #8957e5; }
+.btn-export { background: #21262d; border: 1px solid var(--border); }
+.btn-import { background: #30363d; }
+.btn-danger { background: var(--red); opacity: 0.7; }
+button:hover { opacity: 0.8; }
 
-table { width: 100%; border-collapse: collapse; background: var(--card); }
-th, td { border: 1px solid var(--border); padding: 10px; text-align: center; }
+table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 8px; overflow: hidden; }
+th, td { border: 1px solid var(--border); padding: 12px; text-align: center; }
 th { background: #21262d; }
 
-.status-bom { background: var(--green) !important; color: #fff; }
-.status-regular { background: var(--yellow) !important; color: #fff; }
-.status-ruim { background: var(--red) !important; color: #fff; }
+.status-bom { background: var(--green) !important; }
+.status-regular { background: var(--yellow) !important; }
+.status-ruim { background: var(--red) !important; }
 
-#status-month { font-size: 1.2rem !important; }
+input.obs-field { background: transparent; color: white; border: none; border-bottom: 1px solid #333; width: 90%; }
