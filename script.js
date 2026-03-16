@@ -1,51 +1,41 @@
-let allData = [];
-
-function updateStats() {
-    if (allData.length === 0) return;
-    
-    const totalMinutes = allData.reduce((acc, curr) => acc + curr.minutos, 0);
-    const avg = (totalMinutes / allData.length).toFixed(1);
-    
-    document.getElementById('avg-day').innerText = `${avg} min`;
-    document.getElementById('total-ocs').innerText = allData.length;
-    
-    const bom = allData.filter(d => d.minutos <= 5).length;
-    const regular = allData.filter(d => d.minutos > 5 && d.minutos <= 15).length;
-    const ruim = allData.filter(d => d.minutos > 15).length;
-    
-    document.getElementById('status-counts').innerHTML = `B/R/R <span>${bom} / ${regular} / ${ruim}</span>`;
+:root {
+    --bg-color: #121212;
+    --card-bg: #1e1e1e;
+    --text-color: #e0e0e0;
+    --border-color: #333;
+    --primary: #007bff;
 }
 
-function addManualRow() {
-    const pdv = document.getElementById('m-pdv').value;
-    const data = document.getElementById('m-data').value;
-    const inicio = document.getElementById('m-inicio').value;
-    const fim = document.getElementById('m-fim').value;
+body { font-family: 'Segoe UI', sans-serif; padding: 20px; background-color: var(--bg-color); color: var(--text-color); }
 
-    if(!inicio || !fim) return alert("Preencha as horas!");
-
-    const diff = calculateDiff(inicio, fim);
-    const newData = { PDV: pdv, Data: data, HoraInicio: inicio, HoraFim: fim, minutos: diff };
-    
-    allData.push(newData);
-    renderNewRow(newData);
-    updateStats();
+.summary-card { 
+    background: var(--card-bg); 
+    padding: 20px; 
+    border-radius: 12px; 
+    margin-bottom: 20px; 
+    border: 1px solid var(--border-color);
+    display: flex; justify-content: space-around; text-align: center;
 }
 
-function renderNewRow(row) {
-    const tbody = document.querySelector('#data-table tbody');
-    const statusClass = getStatusClass(row.minutos);
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-        <td>${row.PDV}</td>
-        <td>${row.Data}</td>
-        <td>${row.HoraInicio}</td>
-        <td>${row.HoraFim}</td>
-        <td>${row.minutos} min</td>
-        <td class="${statusClass}">${getStatusLabel(row.minutos)}</td>
-        <td><input type="text" class="obs-field" placeholder="Obs..."></td>
-    `;
-    tbody.appendChild(tr);
+.stat-item span { display: block; font-size: 1.8rem; font-weight: bold; color: var(--primary); margin-top: 5px; }
+
+.upload-section { background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); }
+
+.manual-form { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+input, button { 
+    background: #2c2c2c; color: white; border: 1px solid #444; padding: 10px; border-radius: 6px; 
 }
 
-// Reutilize suas funções calculateDiff, getStatusClass e getStatusLabel anteriores
+button { background: var(--primary); border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
+button:hover { background: #0056b3; }
+
+table { width: 100%; border-collapse: collapse; margin-top: 25px; background: var(--card-bg); }
+th, td { border: 1px solid var(--border-color); padding: 12px; text-align: center; }
+th { background-color: #2c2c2c; }
+
+.status-bom { background-color: #1b5e20 !important; color: #fff; }
+.status-regular { background-color: #fbc02d !important; color: #000; }
+.status-ruim { background-color: #b71c1c !important; color: #fff; }
+
+input.obs-field { width: 90%; background: transparent; }
