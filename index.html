@@ -17,20 +17,29 @@
         <div class="stat-item">Status (B/R/R)<span id="status-counts">0 / 0 / 0</span></div>
     </div>
 
-    <div class="upload-section">
-        <h3>Adicionar Novo Registro:</h3>
-        <div class="manual-form">
-            <input type="text" id="m-pdv" placeholder="Nome do PDV">
-            <input type="date" id="m-data">
-            <label>Início:</label><input type="time" id="m-inicio">
-            <label>Fim:</label><input type="time" id="m-fim">
-            <button onclick="addManualRow()">+ Adicionar</button>
+    <div class="main-container">
+        <div class="section-box">
+            <h3>➕ Adicionar Registro Manual</h3>
+            <div class="manual-form">
+                <div class="input-group">
+                    <input type="text" id="m-pdv" placeholder="Nome do PDV">
+                    <input type="date" id="m-data">
+                </div>
+                <div class="input-group">
+                    <label>Início:</label><input type="time" id="m-inicio">
+                    <label>Fim:</label><input type="time" id="m-fim">
+                </div>
+                <button onclick="addManualRow()" class="btn-add">Adicionar na Tabela</button>
+            </div>
         </div>
-        
-        <hr style="border: 0.5px solid #333; margin: 20px 0;">
-        
-        <label for="file-upload">Ou importar planilha completa:</label>
-        <input type="file" id="file-upload" accept=".xlsx, .xls, .csv">
+
+        <div class="section-box">
+            <h3>📁 Importar Planilha Atual</h3>
+            <input type="file" id="file-upload" accept=".xlsx, .xls, .csv">
+            <p style="font-size: 0.8rem; color: #8b949e; margin-top: 10px;">
+                Colunas necessárias: PDV, Data, HoraInicio, HoraFim
+            </p>
+        </div>
     </div>
 
     <table id="data-table">
