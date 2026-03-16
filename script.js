@@ -12,7 +12,13 @@ function handleFile(e) {
         
         rows.forEach(row => {
             const diff = calculateDiff(row.HoraInicio, row.HoraFim);
-            allData.push({ ...row, minutos: diff });
+            allData.push({ 
+                PDV: row.PDV, 
+                Data: row.Data, 
+                HoraInicio: row.HoraInicio, 
+                HoraFim: row.HoraFim, 
+                minutos: diff 
+            });
         });
         renderTable();
     };
@@ -33,14 +39,15 @@ function addManualRow() {
     const inicio = document.getElementById('m-inicio').value;
     const fim = document.getElementById('m-fim').value;
 
-    if(!inicio || !fim) return alert("Preencha as horas!");
+    if(!inicio || !fim) return alert("Preencha os horários!");
 
     const diff = calculateDiff(inicio, fim);
     allData.push({ PDV: pdv, Data: data, HoraInicio: inicio, HoraFim: fim, minutos: diff });
     
     renderTable();
-    // Limpa campos
     document.getElementById('m-pdv').value = '';
+    document.getElementById('m-inicio').value = '';
+    document.getElementById('m-fim').value = '';
 }
 
 function renderTable() {
@@ -48,8 +55,8 @@ function renderTable() {
     tbody.innerHTML = '';
     
     allData.forEach(row => {
-        const statusClass = row.minutos <= 5 ? 'status-bom' : row.minutos <= 15 ? 'status-regular' : 'status-ruim';
-        const statusLabel = row.minutos <= 5 ? 'BOM' : row.minutos <= 15 ? 'REGULAR' : 'RUIM';
+        let statusClass = row.minutos <= 5 ? 'status-bom' : row.minutos <= 15 ? 'status-regular' : 'status-ruim';
+        let statusLabel = row.minutos <= 5 ? 'BOM' : row.minutos <= 15 ? 'REGULAR' : 'RUIM';
         
         const tr = document.createElement('tr');
         tr.innerHTML = `
