@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de PDV</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+
+    <h1>📊 Gerenciador de Relatórios PDV</h1>
+
+    <div class="upload-section">
+        <label for="file-upload">Importar Planilha Atual:</label>
+        <input type="file" id="file-upload" accept=".xlsx, .xls, .csv">
+    </div>
+
+    <div id="report-summary" class="summary-card">
+        <h3>📈 Resumo do Mês</h3>
+        <p id="total-stats">Aguardando importação...</p>
+    </div>
+
+    <table id="data-table">
+        <thead>
+            <tr>
+                <th>PDV</th>
+                <th>Data</th>
+                <th>Início</th>
+                <th>Fim</th>
+                <th>Tempo Gasto</th>
+                <th>Status</th>
+                <th>Observação</th>
+            </tr>
+        </thead>
+        <tbody>
+            </tbody>
+    </table>
+
+    <script src="script.js"></script>
+</body>
+</html>
